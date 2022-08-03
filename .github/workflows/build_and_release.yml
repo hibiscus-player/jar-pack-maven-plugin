@@ -2,9 +2,11 @@ name: "Build and Release"
 
 on:
   workflow_dispatch:
-    version:
-      required: true
-      type: string
+    inputs:
+      version:
+        required: true
+        description: "The version to release"
+        type: string
 jobs:
   build-and-release:
     name: "Build and Release"
