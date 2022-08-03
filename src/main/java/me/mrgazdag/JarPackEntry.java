@@ -1,17 +1,27 @@
 package me.mrgazdag;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugins.annotations.Parameter;
 
 public class JarPackEntry {
+    @Parameter(required = true)
+    private String groupId;
+    @Parameter(required = true)
+    private String artifactId;
     @Parameter
-    private String artifact;
+    private String version;
+    @Parameter
+    private String classifier;
     @Parameter(defaultValue = "/")
     private String folderName;
     @Parameter
     private String fileName;
 
-    public String getArtifact() {
-        return artifact;
+    public boolean matches(Artifact artifact) {
+        if (!groupId.equals(artifact.getGroupId())) return false;
+        if (!artifactId.equals(artifact.getArtifactId())) return false;
+        if (version != null && !version.equals(artifact.getVersion())) return false;
+        return classifier != null && classifier.equals(artifact.getClassifier());
     }
 
     public String getFolderName() {
@@ -25,7 +35,10 @@ public class JarPackEntry {
     @Override
     public String toString() {
         return "JarPackEntry{" +
-                "artifact='" + artifact + '\'' +
+                "groupId='" + groupId + '\'' +
+                ", artifactId='" + artifactId + '\'' +
+                ", version='" + version + '\'' +
+                ", classifier='" + classifier + '\'' +
                 ", folderName='" + folderName + '\'' +
                 ", fileName='" + fileName + '\'' +
                 '}';

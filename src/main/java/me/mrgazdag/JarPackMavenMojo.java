@@ -41,20 +41,18 @@ public class JarPackMavenMojo extends AbstractMojo {
         env.put("create", "true");
         File file = project.getArtifact().getFile();
 
-        // Create mapped entries
-        Map<String,JarPackEntry> map = mapEntries(entries);
-
         byte[] buffer = new byte[8192];
         int read;
 
         try (FileSystem fs = FileSystems.newFileSystem(URI.create("jar:" + file.toPath().toUri()), env)) {
+            getLog().info("Packing artifacts...");
+            int counter = 0;
             for (Artifact artifact : set) {
                 String entryKey = getEntryKey(artifact);
-                JarPackEntry entry = map.get(entryKey);
+                JarPackEntry entry = getMatching(entries, artifact);
                 if (printArtifacts) {
                     getLog().info("");
                     getLog().info(artifact.toString());
-                    getLog().info("- also known as " + entryKey);
                     getLog().info("- " + artifact.getFile());
                     if (entry != null) {
                         getLog().info("- will be packed as: " + entry);
@@ -69,7 +67,8 @@ public class JarPackMavenMojo extends AbstractMojo {
 
                     String pathString = (folder == null ? "" : folder + "/") + fileName;
 
-                    if (!printArtifacts) getLog().info("Packing '" + entry.getArtifact() + "' to '" + pathString + "'");
+                    if (!printArtifacts) getLog().info("Packing '" + entryKey + "' to '" + pathString + "'");
+                    counter++;
                     Path path = fs.getPath(pathString);
                     OutputStream out = Files.newOutputStream(path);
                     FileInputStream fis = new FileInputStream(artifact.getFile());
@@ -82,6 +81,16 @@ public class JarPackMavenMojo extends AbstractMojo {
                     out.close();
                 }
             }
+            getLog().info("");
+            if (counter == 0) {
+                if (entries.size() == 0) {
+                    getLog().info("Found no artifact to pack.");
+                } else {
+                    getLog().warn("Found no matching artifacts to pack. Be sure to check that the entries were specified correctly!");
+                }
+            } else {
+                getLog().info("Successfully packed " + counter + " artifacts!");
+            }
         } catch (IOException e) {
             throw new MojoExecutionException(e);
         }
@@ -91,11 +100,10 @@ public class JarPackMavenMojo extends AbstractMojo {
         return artifact.getGroupId() + ":" + artifact.getArtifactId() + (artifact.hasClassifier() ? ":" + artifact.getClassifier() : "") + ":" + artifact.getVersion();
     }
 
-    private static Map<String, JarPackEntry> mapEntries(List<JarPackEntry> list) {
-        Map<String, JarPackEntry> map = new HashMap<>();
-        for (JarPackEntry entry : list) {
-            map.put(entry.getArtifact(), entry);
+    private static JarPackEntry getMatching(List<JarPackEntry> entries, Artifact artifact) {
+        for (JarPackEntry entry : entries) {
+            if (entry.matches(artifact)) return entry;
         }
-        return map;
+        return null;
     }
 }
