@@ -1,6 +1,10 @@
 name: "Build and Release"
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    version:
+      required: true
+      type: string
 jobs:
   build-and-release:
     name: "Build and Release"
@@ -22,7 +26,7 @@ jobs:
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "${{ env.VERSION }}"
+          automatic_release_tag: "${{ inputs.version }}"
           prerelease: false
-          title: "Release - ${{ env.VERSION }}"
+          title: "Release - ${{ inputs.version }}"
           files: "*.jar"
