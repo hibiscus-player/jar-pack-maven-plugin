@@ -21,7 +21,8 @@ public class JarPackEntry {
         if (!groupId.equals(artifact.getGroupId())) return false;
         if (!artifactId.equals(artifact.getArtifactId())) return false;
         if (version != null && !version.equals(artifact.getVersion())) return false;
-        return classifier != null && classifier.equals(artifact.getClassifier());
+        if (classifier != null && classifier.equals(artifact.getClassifier())) return false;
+        return true;
     }
 
     public String getFolderName() {
