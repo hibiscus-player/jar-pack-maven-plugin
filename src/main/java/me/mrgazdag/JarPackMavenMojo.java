@@ -1,11 +1,8 @@
 package me.mrgazdag;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -29,17 +26,6 @@ import java.util.Set;
 public class JarPackMavenMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     MavenProject project;
-    /**
-     * Remote repositories which will be searched for source attachments.
-     */
-    @Parameter( readonly = true, required = true, defaultValue = "${project.remoteArtifactRepositories}" )
-    protected List<ArtifactRepository> remoteArtifactRepositories;
-
-    /**
-     * Local maven repository.
-     */
-    @Parameter( readonly = true, required = true, defaultValue = "${localRepository}" )
-    protected ArtifactRepository localRepository;
 
     @Parameter(required = true)
     List<JarPackEntry> entries;
@@ -47,9 +33,9 @@ public class JarPackMavenMojo extends AbstractMojo {
     @Parameter(defaultValue = "false")
     boolean printArtifacts;
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        List<Dependency> deps = project.getDependencies();
+    public void execute() throws MojoExecutionException {
         Set<Artifact> set = project.getDependencyArtifacts();
         Map<String, String> env = new HashMap<>();
         env.put("create", "true");
