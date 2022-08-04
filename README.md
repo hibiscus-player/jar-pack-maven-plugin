@@ -1,7 +1,7 @@
 # jar-pack-maven-plugin
 A maven plugin to assist in creating jar files which contain other jar files.
-For example, you can use this maven plugin, if you want to add one of your
-dependencies to the final jar, in a way that you want to achieve the following file structure:
+For example, you can use this maven plugin if you want to add one of your
+dependencies to the final jar in a way that you want to achieve the following file structure:
 ```
 example-result-artifact-1.0.jar
 ├── com
@@ -51,7 +51,7 @@ Then you can reference this in your build, in the following way:
 
 You need to specify entries, which will be put into the final jar file. Entries are declared in the `<entries>` tag, and each entry is an `<entry>` tag.
 You can specify as many entries as you want. Each entry is required to have a `<groupId>`, and an `<artifactId>`, which represent the target artifact's
-`groupId` and `artifactId` respectively. You can optionally specify a version filter (with <version>), and a classifier filter (with <classifier>). If
+`groupId` and `artifactId` respectively. You can optionally specify a version filter (with `<version>`), and a classifier filter (with `<classifier>`). If
 you don't specify a version/classifier filter, and you have multiple dependencies with the same `groupId` and `artifactId`, then all of them will be packed.
 ```xml
 <entries>
